@@ -1,31 +1,31 @@
 <?php namespace Ske\Env;
 
 class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
-    public function __construct(array $data = []) {
-   		$this->setAll($data);
+    public function __construct(array $vars = []) {
+   		$this->setAll($vars);
     }
 
-    protected array $data;
+    protected array $vars;
 
-	public function setAll(array $data): self {
-		$this->data = [];
-		return $this->setAny($data);
+	public function setAll(array $vars): self {
+		$this->vars = [];
+		return $this->setAny($vars);
 	}
 
-	public function setAny(array $data): self {
-		foreach ($data as $key => $value) {
+	public function setAny(array $vars): self {
+		foreach ($vars as $key => $value) {
 			$this->set($key, $value);
 		}
 		return $this;
 	}
 
 	public function getAll(): array {
-		return $this->data;
+		return $this->vars;
 	}
 
-	public function getAny(array $data): array {
+	public function getAny(array $vars): array {
 		$values = [];
-		foreach ($data as $key => $value) {
+		foreach ($vars as $key => $value) {
 			if ($this->isset($key)) {
 				$values[$key] = $this->get($key);
 			}
@@ -47,21 +47,31 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
 		};
 	}
 
-    public function set(string $key, mixed $value): mixed {
-        $value = self::parse($value);
-        return $this->data[$key] = $value;
+    public function set(string $key, mixed $value): self {
+        if (is_array($value)) {
+			foreach ($value as $k => $v) {
+				$this->set($key . '_' . $k, $v);
+			}
+		}
+		else {
+			$key = strtoupper($key);
+			$value = self::parse($value);
+			putenv("$key=$value");
+			$this->vars[$key] = $_ENV[$key] = $_SERVER[$key] = $value;
+		}
+		return $this;
     }
 
     public function get(string $key, mixed $default = null): mixed {
-        return $this->data[$key] ?? $default;
+        return $this->vars[$key] ?? $default;
     }
 
     public function isset(string $key): bool {
-        return isset($this->data[$key]);
+        return isset($this->vars[$key]);
     }
 
     public function unset(string $key): void {
-        unset($this->data[$key]);
+        unset($this->vars[$key]);
     }
 
     public function offsetExists(mixed $offset): bool {
@@ -81,11 +91,11 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
     }
 
     public function getIterator(): \ArrayIterator {
-        return new \ArrayIterator($this->data);
+        return new \ArrayIterator($this->vars);
     }
 
     public function count(): int {
-        return count($this->data);
+        return count($this->vars);
     }
 
     public function __set(string $key, mixed $value): void {
@@ -105,6 +115,6 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
     }
 
     public function __debugInfo(): array {
-        return $this->data;
+        return $this->vars;
     }
 }
