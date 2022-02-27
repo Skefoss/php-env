@@ -1,0 +1,5 @@
+#!/usr/bin/env php
+<?php
+print 'Configuring Environment\'s Variables...' . PHP_EOL;
+//...
+print 'Done!' . PHP_EOL;
