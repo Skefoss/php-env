@@ -9,14 +9,22 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
 
     protected array $options;
 
+	public static function cast(array $data): self {
+		return new self($data);
+	}
+
+	public static function parse(mixed $value): mixed {
+		return match (true) {
+			in_array($value, ['null', 'Null', 'NULL', 'nil', 'Nil', 'NIL', 'none', 'NONE'], true) => null,
+			in_array($value, ['true', 'True', 'TRUE', 'on', 'On', 'ON', 'yes', 'Yes', 'YES', 't', 'T', 'y', 'Y', '1'], true) => true,
+			in_array($value, ['false', 'False', 'FALSE', 'off', 'Off', 'OFF', 'no', 'No', 'NO', 'f', 'F', 'n', 'N', '0'], true) => false,
+			is_numeric($value) => is_int(strpos($value, '.')) ? (float) $value : (int) $value,
+			default => $value,
+		};
+	}
+
     public function set(string $key, mixed $value): mixed {
-        $value = match (true) {
-            in_array($value, ['null', 'Null', 'NULL', 'nil', 'Nil', 'NIL', 'none', 'NONE'], true) => null,
-            in_array($value, ['true', 'True', 'TRUE', 'on', 'On', 'ON', 'yes', 'Yes', 'YES', 't', 'T', 'y', 'Y', '1'], true) => true,
-            in_array($value, ['false', 'False', 'FALSE', 'off', 'Off', 'OFF', 'no', 'No', 'NO', 'f', 'F', 'n', 'N', '0'], true) => false,
-            is_numeric($value) => is_int(strpos($value, '.')) ? (float) $value : (int) $value,
-            default => $value,
-        };
+        $value = self::parse($value);
         return $this->options[$key] = $value;
     }
 
