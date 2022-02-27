@@ -1,13 +1,37 @@
 <?php namespace Ske\Env;
 
 class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
-    public function __construct(array $options = []) {
-        foreach ($options as $key => $value) {
-            $this->set($key, $value);
-        }
+    public function __construct(array $data = []) {
+   		$this->setAll($data);
     }
 
-    protected array $options;
+    protected array $data;
+
+	public function setAll(array $data): self {
+		$this->data = [];
+		return $this->setAny($data);
+	}
+
+	public function setAny(array $data): self {
+		foreach ($data as $key => $value) {
+			$this->set($key, $value);
+		}
+		return $this;
+	}
+
+	public function getAll(): array {
+		return $this->data;
+	}
+
+	public function getAny(array $data): array {
+		$values = [];
+		foreach ($data as $key => $value) {
+			if ($this->isset($key)) {
+				$values[$key] = $this->get($key);
+			}
+		}
+		return $values;
+	}
 
 	public static function cast(array $data): self {
 		return new self($data);
@@ -25,19 +49,19 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
 
     public function set(string $key, mixed $value): mixed {
         $value = self::parse($value);
-        return $this->options[$key] = $value;
+        return $this->data[$key] = $value;
     }
 
     public function get(string $key, mixed $default = null): mixed {
-        return $this->options[$key] ?? $default;
+        return $this->data[$key] ?? $default;
     }
 
     public function isset(string $key): bool {
-        return isset($this->options[$key]);
+        return isset($this->data[$key]);
     }
 
     public function unset(string $key): void {
-        unset($this->options[$key]);
+        unset($this->data[$key]);
     }
 
     public function offsetExists(mixed $offset): bool {
@@ -57,11 +81,11 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
     }
 
     public function getIterator(): \ArrayIterator {
-        return new \ArrayIterator($this->options);
+        return new \ArrayIterator($this->data);
     }
 
     public function count(): int {
-        return count($this->options);
+        return count($this->data);
     }
 
     public function __set(string $key, mixed $value): void {
@@ -81,6 +105,6 @@ class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
     }
 
     public function __debugInfo(): array {
-        return $this->options;
+        return $this->data;
     }
 }
