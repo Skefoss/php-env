@@ -1,7 +1,7 @@
 {
-    "name": "ske/env",
+    "name": "ske/dot-env",
     "description": "Manage PHP environment variables and build environment files",
-    "homepage": "https://packagist.org/packages/ske/env",
+    "homepage": "https://packagist.org/packages/ske/dot-env",
     "license": "Apache-2.0",
     "keywords": [
         "dotenv",
@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ske\\Env\\": "src/"
+            "Ske\\Dot\\": "src/"
         }
     },
     "config": {

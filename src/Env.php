@@ -1,4 +1,4 @@
-<?php namespace Ske\Env;
+<?php namespace Ske\Dot;
 
 class Env implements \ArrayAccess, \IteratorAggregate, \Countable {
     public function __construct(array $vars = []) {
