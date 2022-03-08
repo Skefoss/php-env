@@ -1,7 +1,7 @@
 {
     "name": "ske/env",
     "description": "Manage PHP environment variables and build environment files",
-    "homepage": "https://packagist.org/packages/php/env",
+    "homepage": "https://packagist.org/packages/ske/env",
     "license": "Apache-2.0",
     "keywords": [
         "dotenv",
@@ -15,8 +15,8 @@
         "role": "Developer"
     }],
     "support": {
-        "source": "https://github.com/skefoss/php-env",
-        "issues": "https://github.com/skefoss/php-env/issues"
+        "source": "https://github.com/skefoss/php-dot-env",
+        "issues": "https://github.com/skefoss/php-dot-env/issues"
     },
     "require": {
         "php": ">=8.0"
